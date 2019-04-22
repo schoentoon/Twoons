@@ -1,0 +1,87 @@
+Ui_MainWindow {
+  background: #222222;
+}
+
+Ui_Column {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background: #3a3a3a;
+}
+
+QScrollArea {
+  border-radius: 50px;
+}
+
+TweetBox {
+  border-radius: 5px;
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+              stop: 0 #111111, stop: 0.7 #111111, stop: 1 transparent);
+}
+
+QGroupBox::title {
+  subcontrol-position: top center;
+}
+
+QProgressBar {
+  border-radius: 4px;
+  text-align: center;
+}
+
+QProgressBar::chunk {
+  background: #1b4370;
+}
+
+QScrollBar:vertical {
+  border: 1px;
+  width: 5px;
+  background: none;
+}
+
+QScrollBar::handle:vertical {
+  background: #3F3F3F;
+  min-height: 5px;
+  border-radius: 3px;
+}
+
+QScrollBar::add-line:vertical {
+  border: 1px;
+  height: 10px;
+  subcontrol-position: bottom;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+  border: 1px;
+  height: 10px;
+  subcontrol-position: top;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+  background: none;
+}
+
+#followButton {
+  background: green;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+#unfollowButton {
+  background: red;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+#UserProfileViewFollowButton[follow=true] {
+  border-radius: 5px;
+  background: red;
+}
+
+#UserProfileViewFollowButton[follow=false] {
+  border-radius: 5px;
+  background: green;
+}
+
+#UserProfileViewFollowButton[me=true] {
+  background: yellow;
+}

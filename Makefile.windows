@@ -1,0 +1,58 @@
+SHELL       := /bin/bash
+LDFLAGS     := -I. -Ijson -Iui -Itwitter -Idatastorage
+CXX         := i686-pc-mingw32-c++
+CC          := i686-pc-mingw32-gcc
+LINKER      := -Wl,-subsystem,windows
+DEFINES     := -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DQT_NO_DYNAMIC_CAST
+CFLAGS      := -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 --param=ssp-buffer-size=4 -mms-bitfields -O2 -fexceptions -mthreads -Wall -fno-rtti $(DEFINES)
+INCPATH     := -I/usr/i686-pc-mingw32/sys-root/mingw/include/QtCore -I/usr/i686-pc-mingw32/sys-root/mingw/include/QtGui -I/usr/i686-pc-mingw32/sys-root/mingw/include/QtNetwork -I/usr/i686-pc-mingw32/sys-root/mingw/include  -I/usr/i686-pc-mingw32/sys-root/mingw/include/ActiveQt -I/usr/lib64/qt4/mkspecs/win32-g++-cross -I/usr/i686-pc-mingw32/sys-root/mingw/include
+LFLAGS      := -Wl,-s -mthreads -Wl,-subsystem,windows
+LIBS        := -L/usr/i686-pc-mingw32/sys-root/mingw/lib -lmingw32 -lqtmain4 -lQtGui4 -lQtNetwork4 -lQtCore4 -L/usr/i686-pc-mingw32/sys-root/mingw/lib -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lz
+EXECUTABLE  := twoons
+MOCBIN      := /c/Qt/4.7.4/bin/moc.exe
+MOCS        := moc_datastorage.datastorage moc_twitter.stream_thread moc_ui.ui_settings moc_ui.ui_errorbox moc_ui.ui_dm \
+moc_ui.ui_auth moc_ui.ui_autocomplete moc_ui.ui_column moc_ui.ui_filtersettings moc_ui.ui_trendingtopic \
+moc_ui.ui_listbox moc_ui.ui_mainwindow moc_ui.ui_tweetbox moc_ui.ui_tweetfield moc_ui.ui_userbox moc_ui.ui_userprofile
+LIB_SRCS    := CString SHA256 MD5 OAuthUtils OAuth json/jsonxx ui/ui_errorbox ui/ui_dm \
+datastorage/datastorage datastorage/user_store datastorage/global ui/ui_settings ui/ui_trendingtopic \
+ui/ui_column ui/ui_mainwindow ui/ui_tweetbox ui/ui_filtersettings ui/ui_userprofile \
+ui/ui_listbox ui/ui_tweetfield ui/ui_userbox ui/ui_autocomplete ui/ui_auth twitter/stream_thread \
+twitter/status twitter/user twitter/list \
+main
+
+all: $(LIB_SRCS) resources link
+
+%: %.cpp
+	$(CXX) $(CFLAGS) $(INCPATH) $(LDFLAGS) -c -o $@.o $@.cpp $(LIBS) 
+
+moc_%:
+	$(MOCBIN) -i $(subst moc_,,$(subst .,/,$@)).h -o $(subst .,/moc_,$(subst moc_,,$@)).h
+	@sed -i '1,9d' $(subst .,/moc_,$(subst moc_,,$@)).h
+
+mocs: $(MOCS)
+
+resources:
+	rcc twoons.qrc -o resources.cpp
+	@sed -i '1,9d' resources.cpp
+	@sed -i '/\/\//d' resources.cpp
+	$(CXX) $(CFLAGS) $(INCPATH) $(LDFLAGS) -c resources.cpp -o resources.o $(LIBS) 
+
+link: $(LIB_SRCS)
+	$(CXX) $(CFLAGS) $(INCPATH) $(LFLAGS) -o $(EXECUTABLE) *.o json/*.o ui/*.o twitter/*.o datastorage/*.o $(LIBS)
+
+install:
+	cp $(EXECUTABLE) ~/bin/
+
+clean:
+	rm -f *.o json/*.o ui/*.o twitter/*.o datastorage/*.o *~ $(EXECUTABLE)
+
+dist: $(EXECUTABLE)
+	@strip -s $(EXECUTABLE)
+	md5sum $(EXECUTABLE)
+	sha1sum $(EXECUTABLE)
+	sha512sum $(EXECUTABLE)
+	@gzip -v -f $(EXECUTABLE)
+	@echo "Now go upload $(EXECUTABLE).gz"
+
+doc:
+	doxygen

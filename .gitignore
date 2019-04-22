@@ -1,0 +1,9 @@
+*.o
+twoons
+twoons.gz
+tags
+html
+testing
+resources.cpp
+.directory
+moc_*.h
